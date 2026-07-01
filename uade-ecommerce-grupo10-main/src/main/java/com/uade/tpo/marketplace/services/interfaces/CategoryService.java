@@ -7,15 +7,13 @@ import java.util.Optional;
 
 public interface CategoryService {
 
-    // Obtener el listado completo de categorías
     List<Category> getCategories();
 
-    // Buscar una categoría por su ID
     Optional<Category> getCategoryById(Long id);
 
-    // Crear una categoría validando que el nombre no esté duplicado
     Category createCategory(String name) throws CategoryDuplicateException;
 
-    // Eliminar una categoría y confirmar si se realizó la operación
+    Optional<Category> updateCategory(Long id, String name) throws CategoryDuplicateException;
+
     boolean deleteCategory(Long id);
 }

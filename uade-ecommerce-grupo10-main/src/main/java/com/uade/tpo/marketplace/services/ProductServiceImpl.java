@@ -47,6 +47,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product createProduct(Product product) {
+
         Brand brand = brandRepository.findById(product.getBrand().getBrandId())
                 .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
 
@@ -56,8 +57,14 @@ public class ProductServiceImpl implements ProductService {
         product.setBrand(brand);
         product.setCategory(category);
 
+        // Asocia las variantes al producto
         if (product.getVariants() != null) {
             product.getVariants().forEach(variant -> variant.setProduct(product));
+        }
+
+        // Asocia las imágenes al producto
+        if (product.getImages() != null) {
+            product.getImages().forEach(image -> image.setProduct(product));
         }
 
         Product savedProduct = productRepository.save(product);
@@ -68,10 +75,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Optional<Product> updateProduct(Long productId, Product productDetails) {
+
         Optional<Product> existingProduct = productRepository.findById(productId);
 
         if (existingProduct.isPresent()) {
+
             Product productToUpdate = existingProduct.get();
+
             productToUpdate.setModel(productDetails.getModel());
             productToUpdate.setDescription(productDetails.getDescription());
             productToUpdate.setPrice(productDetails.getPrice());
@@ -97,10 +107,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public boolean deleteProduct(Long productId) {
+
         if (productRepository.existsById(productId)) {
             productRepository.deleteById(productId);
             return true;
         }
+
         return false;
     }
 }

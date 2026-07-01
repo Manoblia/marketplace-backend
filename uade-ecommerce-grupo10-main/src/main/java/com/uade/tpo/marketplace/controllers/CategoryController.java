@@ -43,11 +43,27 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasAuthority('ROLE_VENDEDOR')")
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateCategory(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body
+    ) {
+        try {
+            return categoryService.updateCategory(id, body.get("categoryName"))
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (CategoryDuplicateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_VENDEDOR')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         if (categoryService.deleteCategory(id)) {
             return ResponseEntity.noContent().build();
         }
+
         return ResponseEntity.notFound().build();
     }
 }

@@ -31,9 +31,33 @@ public class BrandServiceImpl implements BrandService {
         if (brandRepository.existsByBrandNameIgnoreCase(name)) {
             throw new BrandDuplicateException();
         }
+
         Brand brand = new Brand();
         brand.setBrandName(name);
+
         return brandRepository.save(brand);
+    }
+
+    @Override
+    public Optional<Brand> updateBrand(Long id, String name) throws BrandDuplicateException {
+        Optional<Brand> existingBrand = brandRepository.findById(id);
+
+        if (existingBrand.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Brand brand = existingBrand.get();
+
+        if (
+            !brand.getBrandName().equalsIgnoreCase(name) &&
+            brandRepository.existsByBrandNameIgnoreCase(name)
+        ) {
+            throw new BrandDuplicateException();
+        }
+
+        brand.setBrandName(name);
+
+        return Optional.of(brandRepository.save(brand));
     }
 
     @Override
@@ -42,6 +66,7 @@ public class BrandServiceImpl implements BrandService {
             brandRepository.deleteById(id);
             return true;
         }
+
         return false;
     }
 }

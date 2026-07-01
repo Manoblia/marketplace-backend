@@ -7,15 +7,13 @@ import java.util.Optional;
 
 public interface BrandService {
 
-    // Obtener todas las marcas
     List<Brand> getBrands();
 
-    // Obtener una marca por su ID
     Optional<Brand> getBrandById(Long id);
 
-    // Crear una marca (lanzando excepción si ya existe el nombre)
     Brand createBrand(String name) throws BrandDuplicateException;
 
-    // Eliminar una marca devolviendo confirmación de éxito
+    Optional<Brand> updateBrand(Long id, String name) throws BrandDuplicateException;
+
     boolean deleteBrand(Long id);
 }

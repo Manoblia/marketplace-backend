@@ -43,11 +43,27 @@ public class BrandController {
     }
 
     @PreAuthorize("hasAuthority('ROLE_VENDEDOR')")
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateBrand(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body
+    ) {
+        try {
+            return brandService.updateBrand(id, body.get("brandName"))
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (BrandDuplicateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_VENDEDOR')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBrand(@PathVariable Long id) {
         if (brandService.deleteBrand(id)) {
             return ResponseEntity.noContent().build();
         }
+
         return ResponseEntity.notFound().build();
     }
 }

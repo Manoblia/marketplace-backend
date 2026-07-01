@@ -31,9 +31,33 @@ public class CategoryServiceImpl implements CategoryService {
         if (categoryRepository.existsByCategoryNameIgnoreCase(name)) {
             throw new CategoryDuplicateException();
         }
+
         Category category = new Category();
         category.setCategoryName(name);
+
         return categoryRepository.save(category);
+    }
+
+    @Override
+    public Optional<Category> updateCategory(Long id, String name) throws CategoryDuplicateException {
+        Optional<Category> existingCategory = categoryRepository.findById(id);
+
+        if (existingCategory.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Category category = existingCategory.get();
+
+        if (
+            !category.getCategoryName().equalsIgnoreCase(name) &&
+            categoryRepository.existsByCategoryNameIgnoreCase(name)
+        ) {
+            throw new CategoryDuplicateException();
+        }
+
+        category.setCategoryName(name);
+
+        return Optional.of(categoryRepository.save(category));
     }
 
     @Override
@@ -42,6 +66,7 @@ public class CategoryServiceImpl implements CategoryService {
             categoryRepository.deleteById(id);
             return true;
         }
+
         return false;
     }
 }
